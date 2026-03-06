@@ -160,7 +160,7 @@ def load_credentials() -> tuple[str, str]:
 
 
 def login(
-    session: requests.Session | None = None, max_retries: int = 5
+    session: requests.Session | None = None, max_retries: int = 10
 ) -> requests.Session:
     """
     自动登录教务系统，返回已认证的 Session。
