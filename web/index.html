@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SMU Meal Index - 抢饭指数</title>
+  <style>
+    :root {
+      --bg: #f0f4f8;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --text-secondary: #64748b;
+      --text-dim: #94a3b8;
+      --blue-50: #eff6ff;
+      --blue-100: #dbeafe;
+      --blue-200: #bfdbfe;
+      --blue-400: #60a5fa;
+      --blue-500: #3b82f6;
+      --blue-600: #2563eb;
+      --blue-700: #1d4ed8;
+      --blue-800: #1e40af;
+      --green: #16a34a;
+      --green-bg: #f0fdf4;
+      --yellow: #ca8a04;
+      --yellow-bg: #fefce8;
+      --orange: #ea580c;
+      --orange-bg: #fff7ed;
+      --red: #dc2626;
+      --red-bg: #fef2f2;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.04);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- Top Bar ---- */
+    .topbar {
+      background: linear-gradient(135deg, var(--blue-700), var(--blue-500));
+      color: #fff;
+      padding: 2rem 1.5rem 3.5rem;
+    }
+    .topbar-inner {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .topbar h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .topbar .subtitle {
+      font-size: 0.85rem;
+      opacity: 0.8;
+      margin-top: 0.2rem;
+    }
+    .topbar-meta {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      opacity: 0.75;
+    }
+
+    /* ---- Layout ---- */
+    .container {
+      max-width: 960px;
+      margin: -2rem auto 0;
+      padding: 0 1rem 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ---- Campus Tabs ---- */
+    .tab-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 0.65rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--card);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .tab-btn:hover { border-color: var(--blue-200); color: var(--blue-600); }
+    .tab-btn.active {
+      border-color: var(--blue-500);
+      color: var(--blue-600);
+      background: var(--blue-50);
+    }
+
+    /* ---- Score Cards Row ---- */
+    .score-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .score-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.25rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .score-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .score-card .meal-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* gauge */
+    .gauge {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+    .gauge svg { transform: rotate(-90deg); }
+    .gauge .track {
+      fill: none;
+      stroke: var(--blue-100);
+      stroke-width: 10;
+    }
+    .gauge .fill {
+      fill: none;
+      stroke-width: 10;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s cubic-bezier(.4,0,.2,1), stroke 0.4s;
+    }
+    .gauge .center {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      text-align: center;
+    }
+    .gauge .score-num {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .gauge .score-unit {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    /* level pill */
+    .level-pill {
+      display: inline-block;
+      padding: 0.2rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .level-pill.l-green  { background: var(--green-bg);  color: var(--green); }
+    .level-pill.l-yellow { background: var(--yellow-bg); color: var(--yellow); }
+    .level-pill.l-orange { background: var(--orange-bg); color: var(--orange); }
+    .level-pill.l-red    { background: var(--red-bg);    color: var(--red); }
+
+    .score-card .meta {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .score-card .no-data-placeholder {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+
+    /* ---- Section title ---- */
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 1.1em;
+      border-radius: 2px;
+      background: var(--blue-500);
+      flex-shrink: 0;
+    }
+
+    /* ---- Flow Chart ---- */
+    .flow-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.25rem;
+    }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.6rem;
+    }
+    .bar-row:last-child { margin-bottom: 0; }
+    .bar-time {
+      width: 52px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-align: right;
+      padding-right: 0.75rem;
+      flex-shrink: 0;
+    }
+    .bar-track {
+      flex: 1;
+      height: 24px;
+      background: var(--blue-50);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.8s cubic-bezier(.4,0,.2,1);
+      min-width: 3px;
+    }
+    .bar-count {
+      width: 56px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-align: right;
+      padding-left: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    /* ---- History ---- */
+    .history-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+    .history-table {
+      width: 100%;
+      border-spacing: 0;
+    }
+    .history-table thead {
+      background: var(--blue-50);
+    }
+    .history-table th {
+      padding: 0.7rem 1rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--blue-700);
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .history-table td {
+      padding: 0.6rem 1rem;
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+    .history-table tr:hover td {
+      background: var(--blue-50);
+    }
+    .history-table .score-cell {
+      font-weight: 700;
+    }
+
+    /* ---- Footer ---- */
+    footer {
+      max-width: 960px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 0 1rem 2rem;
+      color: var(--text-dim);
+      font-size: 0.72rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Loading / empty states ---- */
+    .state-msg {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+    .no-data-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 540px) {
+      .topbar { padding: 1.5rem 1.25rem 3rem; }
+      .topbar h1 { font-size: 1.3rem; }
+      .score-row { gap: 0.75rem; }
+      .score-card { padding: 1.25rem 1rem; }
+      .gauge { width: 96px; height: 96px; }
+      .gauge .score-num { font-size: 1.6rem; }
+      .flow-card { padding: 1rem 1.1rem; }
+      .history-table th, .history-table td { padding: 0.5rem 0.6rem; font-size: 0.72rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <h1>SMU Meal Index</h1>
+      <p class="subtitle">南方医科大学抢饭指数</p>
+      <div class="topbar-meta">
+        <span id="date-display">--</span>
+        <span id="updated-display"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" id="app">
+    <div class="state-msg">Loading...</div>
+  </div>
+
+  <footer>
+    Data from SMU Academic Affairs System<br>
+    Powered by GitHub Actions + Vercel
+  </footer>
+
+  <script>
+    // =====================================================================
+    // Helpers
+    // =====================================================================
+    const LEVELS = {
+      '畅通': { cls: 'l-green',  color: '#16a34a', ring: '#22c55e' },
+      '一般': { cls: 'l-yellow', color: '#ca8a04', ring: '#eab308' },
+      '拥挤': { cls: 'l-orange', color: '#ea580c', ring: '#f97316' },
+      '爆满': { cls: 'l-red',    color: '#dc2626', ring: '#ef4444' },
+    };
+    function levelOf(lv) { return LEVELS[lv] || LEVELS['畅通']; }
+    function scoreColor(s) {
+      if (s <= 25) return '#16a34a';
+      if (s <= 50) return '#ca8a04';
+      if (s <= 75) return '#ea580c';
+      return '#dc2626';
+    }
+    function barGradient(pct) {
+      if (pct <= 25) return 'linear-gradient(90deg,#86efac,#22c55e)';
+      if (pct <= 50) return 'linear-gradient(90deg,#fde68a,#eab308)';
+      if (pct <= 75) return 'linear-gradient(90deg,#fdba74,#f97316)';
+      return 'linear-gradient(90deg,#fca5a5,#ef4444)';
+    }
+
+    function formatDate(iso) {
+      if (!iso) return '--';
+      const d = new Date(iso + 'T00:00:00');
+      const weekdays = ['日','一','二','三','四','五','六'];
+      return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}  周${weekdays[d.getDay()]}`;
+    }
+    function shortDate(iso) {
+      if (!iso) return '--';
+      return iso.slice(5); // "03-06"
+    }
+
+    // =====================================================================
+    // Renderers
+    // =====================================================================
+    function renderGauge(score) {
+      const r = 48, sw = 10;
+      const vb = (r + sw) * 2;
+      const cx = r + sw, cy = r + sw;
+      const circ = 2 * Math.PI * r;
+      const offset = circ - (score / 100) * circ;
+      const c = scoreColor(score);
+      return `
+        <div class="gauge" style="width:${vb}px;height:${vb}px">
+          <svg width="${vb}" height="${vb}" viewBox="0 0 ${vb} ${vb}">
+            <circle class="track" cx="${cx}" cy="${cy}" r="${r}"/>
+            <circle class="fill" cx="${cx}" cy="${cy}" r="${r}"
+              stroke="${c}" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/>
+          </svg>
+          <div class="center">
+            <div class="score-num" style="color:${c}">${Math.round(score)}</div>
+            <div class="score-unit">/ 100</div>
+          </div>
+        </div>`;
+    }
+
+    function renderScoreCard(mealType, data) {
+      const icon = mealType === '午饭' ? '&#9728;&#65039;' : '&#9789;&#65039;';
+      if (!data) return `
+        <div class="score-card">
+          <div class="meal-label">${icon} ${mealType}</div>
+          <div class="no-data-placeholder">暂无数据</div>
+        </div>`;
+      const lv = levelOf(data.level);
+      return `
+        <div class="score-card">
+          <div class="meal-label">${icon} ${mealType}</div>
+          ${renderGauge(data.score)}
+          <span class="level-pill ${lv.cls}">${data.level}</span>
+          <div class="meta">${data.head_count} 人 &middot; ${data.end_time} 下课</div>
+        </div>`;
+    }
+
+    function renderFlowBars(flows, maxCount) {
+      return flows.map(f => {
+        const pct = maxCount > 0 ? (f.head_count / maxCount * 100) : 0;
+        return `
+          <div class="bar-row">
+            <div class="bar-time">${f.end_time}</div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:${pct}%;background:${barGradient(pct)}"></div>
+            </div>
+            <div class="bar-count">${f.head_count}</div>
+          </div>`;
+      }).join('');
+    }
+
+    function renderHistory(history, campus) {
+      if (!history || Object.keys(history).length === 0) return '';
+      const dates = Object.keys(history).sort().reverse();
+      let rows = '';
+      for (const date of dates) {
+        const meals = history[date]?.[campus];
+        if (!meals) continue;
+        for (const mt of ['午饭','晚饭']) {
+          const d = meals[mt];
+          if (!d) continue;
+          const lv = levelOf(d.level);
+          rows += `
+            <tr>
+              <td>${shortDate(date)}</td>
+              <td>${mt}</td>
+              <td class="score-cell" style="color:${scoreColor(d.score)}">${d.score}</td>
+              <td><span class="level-pill ${lv.cls}" style="font-size:0.65rem">${d.level}</span></td>
+              <td>${d.head_count}</td>
+            </tr>`;
+        }
+      }
+      if (!rows) return '';
+      return `
+        <h3 class="section-title">历史记录</h3>
+        <div class="history-card">
+          <table class="history-table">
+            <thead><tr>
+              <th>日期</th><th>餐次</th><th>得分</th><th>等级</th><th>人数</th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>`;
+    }
+
+    // =====================================================================
+    // Main
+    // =====================================================================
+    let DATA = null;
+    let activeCampus = '本部';
+
+    function render() {
+      if (!DATA) return;
+      const today = DATA.today || {};
+      const hourly = DATA.hourly || {};
+      const campuses = Object.keys(today);
+      if (campuses.length === 0 && Object.keys(hourly).length === 0) {
+        document.getElementById('app').innerHTML = '<div class="no-data-card">今日暂无课程数据</div>';
+        return;
+      }
+      // Make sure activeCampus is valid
+      if (!campuses.includes(activeCampus) && campuses.length > 0) activeCampus = campuses[0];
+
+      const meals = today[activeCampus] || {};
+      const flows = hourly[activeCampus] || [];
+
+      // Max for bars (per-campus)
+      let maxCount = 0;
+      for (const f of flows) { if (f.head_count > maxCount) maxCount = f.head_count; }
+
+      let html = '';
+
+      // Tabs
+      html += '<div class="tab-bar">';
+      for (const c of ['本部','顺德']) {
+        const active = c === activeCampus ? ' active' : '';
+        html += `<button class="tab-btn${active}" data-campus="${c}">${c === '本部' ? '校本部' : '顺德校区'}</button>`;
+      }
+      html += '</div>';
+
+      // Score cards
+      html += '<div class="score-row">';
+      html += renderScoreCard('午饭', meals['午饭']);
+      html += renderScoreCard('晚饭', meals['晚饭']);
+      html += '</div>';
+
+      // Flow chart
+      if (flows.length > 0) {
+        html += '<h3 class="section-title">今日下课人流</h3>';
+        html += `<div class="flow-card">${renderFlowBars(flows, maxCount)}</div>`;
+      }
+
+      // History
+      html += renderHistory(DATA.history, activeCampus);
+
+      document.getElementById('app').innerHTML = html;
+
+      // Bind tab clicks
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeCampus = btn.dataset.campus;
+          render();
+        });
+      });
+    }
+
+    async function main() {
+      try {
+        const resp = await fetch('./data.json');
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        DATA = await resp.json();
+
+        document.getElementById('date-display').textContent = formatDate(DATA.date);
+        if (DATA.updated_at) {
+          document.getElementById('updated-display').textContent = 'Updated ' + DATA.updated_at.replace('T',' ');
+        }
+
+        render();
+      } catch (err) {
+        document.getElementById('app').innerHTML =
+          `<div class="no-data-card">Failed to load data: ${err.message}</div>`;
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>

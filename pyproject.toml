@@ -1,0 +1,15 @@
+[project]
+name = "smu-meal-index"
+version = "0.1.0"
+description = "SMU Meal Index - 南方医科大学抢饭指数"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.32.0",
+    "beautifulsoup4>=4.13.0",
+    "ddddocr==1.5.6",
+    "Pillow>=11.0.0",
+    "python-dotenv>=1.0.0",
+]
+
+[tool.uv]
+index-url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"
