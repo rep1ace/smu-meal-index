@@ -1,5 +1,6 @@
 {
-  "outputDirectory": "web",
+  "buildCommand": "cd web && npm install && npm run build",
+  "outputDirectory": "web/dist",
   "headers": [
     {
       "source": "/data.json",

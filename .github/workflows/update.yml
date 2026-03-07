@@ -35,11 +35,14 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
         run: uv run python scheduler.py
 
+      - name: Copy data.json to web/public for Vite build
+        run: cp web/data.json web/public/data.json
+
       - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add web/data.json meal_index.db
+          git add web/data.json web/public/data.json meal_index.db
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else

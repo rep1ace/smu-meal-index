@@ -2,7 +2,6 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
-dist/
 build/
 .venv/
 
@@ -10,6 +9,10 @@ build/
 passwd.env
 
 # Database (meal_index.db is committed for GitHub Actions persistence)
+
+# Frontend (web/)
+web/node_modules/
+web/dist/
 
 # IDE
 .idea/
@@ -23,3 +26,6 @@ Thumbs.db
 
 # uv
 uv.lock
+
+# Misc
+-p/
