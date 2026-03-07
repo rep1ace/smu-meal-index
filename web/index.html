@@ -303,6 +303,143 @@
       font-weight: 700;
     }
 
+    /* ---- View Toggle ---- */
+    .view-toggle {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 1.25rem;
+      background: var(--card);
+      border-radius: var(--radius-sm);
+      padding: 0.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .view-btn {
+      flex: 1;
+      padding: 0.55rem;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .view-btn:hover { color: var(--blue-600); }
+    .view-btn.active {
+      background: var(--blue-500);
+      color: #fff;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ---- Day Selector (for week view) ---- */
+    .day-selector {
+      display: flex;
+      gap: 0.35rem;
+      margin-bottom: 1.25rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+      -webkit-overflow-scrolling: touch;
+    }
+    .day-btn {
+      flex-shrink: 0;
+      padding: 0.5rem 0.65rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--card);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      min-width: 72px;
+      box-shadow: var(--shadow-sm);
+      line-height: 1.4;
+    }
+    .day-btn:hover { border-color: var(--blue-200); color: var(--blue-600); }
+    .day-btn.active {
+      border-color: var(--blue-500);
+      color: var(--blue-600);
+      background: var(--blue-50);
+    }
+    .day-btn.no-data {
+      opacity: 0.5;
+      color: var(--text-dim);
+    }
+    .day-btn .day-date { display: block; font-size: 0.8rem; }
+    .day-btn .day-weekday { display: block; font-size: 0.65rem; opacity: 0.7; }
+
+    /* ---- Week Overview Grid ---- */
+    .week-overview {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .week-day-card {
+      background: var(--card);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 0.5rem;
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+    .week-day-card:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-1px);
+    }
+    .week-day-card.active {
+      border-color: var(--blue-500);
+    }
+    .week-day-card.no-data {
+      opacity: 0.45;
+    }
+    .week-day-card .wdc-date {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 0.35rem;
+    }
+    .week-day-card .wdc-weekday {
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+    }
+    .week-day-card .wdc-score {
+      font-size: 1.1rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .week-day-card .wdc-label {
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      margin-top: 0.15rem;
+    }
+    .week-day-card .wdc-level {
+      margin-top: 0.35rem;
+    }
+    .week-day-card .wdc-nodata {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      padding: 0.5rem 0;
+    }
+
+    /* Forecast badge */
+    .forecast-badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      background: var(--blue-100);
+      color: var(--blue-700);
+      margin-bottom: 0.5rem;
+    }
+
     /* ---- Footer ---- */
     footer {
       max-width: 960px;
@@ -342,6 +479,12 @@
       .gauge .score-num { font-size: 1.6rem; }
       .flow-card { padding: 1rem 1.1rem; }
       .history-table th, .history-table td { padding: 0.5rem 0.6rem; font-size: 0.72rem; }
+      .week-overview { grid-template-columns: repeat(4, 1fr); }
+      .week-day-card { padding: 0.6rem 0.3rem; }
+      .week-day-card .wdc-score { font-size: 0.95rem; }
+    }
+    @media (max-width: 380px) {
+      .week-overview { grid-template-columns: repeat(3, 1fr); }
     }
   </style>
 </head>
@@ -379,6 +522,8 @@
       '拥挤': { cls: 'l-orange', color: '#ea580c', ring: '#f97316' },
       '爆满': { cls: 'l-red',    color: '#dc2626', ring: '#ef4444' },
     };
+    const WEEKDAYS = ['日','一','二','三','四','五','六'];
+
     function levelOf(lv) { return LEVELS[lv] || LEVELS['畅通']; }
     function scoreColor(s) {
       if (s <= 25) return '#16a34a';
@@ -396,12 +541,20 @@
     function formatDate(iso) {
       if (!iso) return '--';
       const d = new Date(iso + 'T00:00:00');
-      const weekdays = ['日','一','二','三','四','五','六'];
-      return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}  周${weekdays[d.getDay()]}`;
+      return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}  周${WEEKDAYS[d.getDay()]}`;
     }
     function shortDate(iso) {
       if (!iso) return '--';
       return iso.slice(5); // "03-06"
+    }
+    function weekdayOf(iso) {
+      const d = new Date(iso + 'T00:00:00');
+      return '周' + WEEKDAYS[d.getDay()];
+    }
+    function addDays(isoDate, n) {
+      const d = new Date(isoDate + 'T00:00:00');
+      d.setDate(d.getDate() + n);
+      return d.toISOString().slice(0, 10);
     }
 
     // =====================================================================
@@ -428,7 +581,7 @@
         </div>`;
     }
 
-    function renderScoreCard(mealType, data) {
+    function renderScoreCard(mealType, data, isForecast) {
       const icon = mealType === '午饭' ? '&#9728;&#65039;' : '&#9789;&#65039;';
       if (!data) return `
         <div class="score-card">
@@ -439,6 +592,7 @@
       return `
         <div class="score-card">
           <div class="meal-label">${icon} ${mealType}</div>
+          ${isForecast ? '<span class="forecast-badge">预测</span>' : ''}
           ${renderGauge(data.score)}
           <span class="level-pill ${lv.cls}">${data.level}</span>
           <div class="meta">${data.head_count} 人 &middot; ${data.end_time} 下课</div>
@@ -494,66 +648,231 @@
     }
 
     // =====================================================================
-    // Main
+    // Week Overview Renderer
+    // =====================================================================
+    function renderWeekOverview(baseDate, campus) {
+      const forecast = DATA.forecast || {};
+      const forecastHourly = DATA.forecast_hourly || {};
+      const today = DATA.today || {};
+
+      let html = '<div class="week-overview">';
+      for (let i = 0; i < 7; i++) {
+        const d = addDays(baseDate, i);
+        const isToday = (i === 0);
+        const isActive = (d === selectedForecastDate);
+
+        // Get data for this day
+        let dayMeals = null;
+        if (isToday) {
+          dayMeals = today[campus] || null;
+        } else {
+          dayMeals = forecast[d]?.[campus] || null;
+        }
+
+        const hasData = dayMeals && (dayMeals['午饭'] || dayMeals['晚饭']);
+        const activeClass = isActive ? ' active' : '';
+        const noDataClass = !hasData ? ' no-data' : '';
+
+        html += `<div class="week-day-card${activeClass}${noDataClass}" data-forecast-date="${d}">`;
+        html += `<div class="wdc-date">${shortDate(d)}</div>`;
+        html += `<div class="wdc-weekday">${isToday ? '今天' : weekdayOf(d)}</div>`;
+
+        if (hasData) {
+          // Show lunch score as primary indicator
+          const lunch = dayMeals['午饭'];
+          const dinner = dayMeals['晚饭'];
+          const primaryMeal = lunch || dinner;
+          if (primaryMeal) {
+            const c = scoreColor(primaryMeal.score);
+            const lv = levelOf(primaryMeal.level);
+            html += `<div class="wdc-score" style="color:${c}">${Math.round(primaryMeal.score)}</div>`;
+            html += `<div class="wdc-label">午饭</div>`;
+            html += `<div class="wdc-level"><span class="level-pill ${lv.cls}" style="font-size:0.55rem;padding:0.1rem 0.45rem">${primaryMeal.level}</span></div>`;
+          }
+        } else {
+          html += '<div class="wdc-nodata">无课</div>';
+        }
+
+        html += '</div>';
+      }
+      html += '</div>';
+      return html;
+    }
+
+    // =====================================================================
+    // Main State
     // =====================================================================
     let DATA = null;
     let activeCampus = '本部';
+    let activeView = 'today'; // 'today' | 'week'
+    let selectedForecastDate = null; // the date selected in week view
 
     function render() {
       if (!DATA) return;
+
+      if (activeView === 'today') {
+        renderTodayView();
+      } else {
+        renderWeekView();
+      }
+    }
+
+    function renderTodayView() {
       const today = DATA.today || {};
       const hourly = DATA.hourly || {};
-      const campuses = Object.keys(today);
-      if (campuses.length === 0 && Object.keys(hourly).length === 0) {
-        document.getElementById('app').innerHTML = '<div class="no-data-card">今日暂无课程数据</div>';
-        return;
-      }
-      // Make sure activeCampus is valid
-      if (!campuses.includes(activeCampus) && campuses.length > 0) activeCampus = campuses[0];
+      const hasTodayData = Object.keys(today).length > 0 || Object.keys(hourly).length > 0;
 
       const meals = today[activeCampus] || {};
       const flows = hourly[activeCampus] || [];
 
-      // Max for bars (per-campus)
       let maxCount = 0;
       for (const f of flows) { if (f.head_count > maxCount) maxCount = f.head_count; }
 
       let html = '';
 
+      // View toggle
+      html += renderViewToggle();
+
       // Tabs
-      html += '<div class="tab-bar">';
-      for (const c of ['本部','顺德']) {
-        const active = c === activeCampus ? ' active' : '';
-        html += `<button class="tab-btn${active}" data-campus="${c}">${c === '本部' ? '校本部' : '顺德校区'}</button>`;
-      }
-      html += '</div>';
+      html += renderCampusTabs();
 
-      // Score cards
-      html += '<div class="score-row">';
-      html += renderScoreCard('午饭', meals['午饭']);
-      html += renderScoreCard('晚饭', meals['晚饭']);
-      html += '</div>';
+      if (!hasTodayData) {
+        html += '<div class="no-data-card">今日暂无课程数据</div>';
+      } else {
+        // Score cards
+        html += '<div class="score-row">';
+        html += renderScoreCard('午饭', meals['午饭'], false);
+        html += renderScoreCard('晚饭', meals['晚饭'], false);
+        html += '</div>';
 
-      // Flow chart
-      if (flows.length > 0) {
-        html += '<h3 class="section-title">今日下课人流</h3>';
-        html += `<div class="flow-card">${renderFlowBars(flows, maxCount)}</div>`;
+        // Flow chart
+        if (flows.length > 0) {
+          html += '<h3 class="section-title">今日下课人流</h3>';
+          html += `<div class="flow-card">${renderFlowBars(flows, maxCount)}</div>`;
+        }
       }
 
       // History
       html += renderHistory(DATA.history, activeCampus);
 
       document.getElementById('app').innerHTML = html;
+      bindEvents();
+    }
 
-      // Bind tab clicks
+    function renderWeekView() {
+      const forecast = DATA.forecast || {};
+      const forecastHourly = DATA.forecast_hourly || {};
+      const today = DATA.today || {};
+      const todayHourly = DATA.hourly || {};
+      const baseDate = DATA.date;
+
+      // Initialize selected date if not set
+      if (!selectedForecastDate) {
+        selectedForecastDate = baseDate;
+      }
+
+      const isToday = (selectedForecastDate === baseDate);
+      let dayMeals, dayFlows;
+
+      if (isToday) {
+        dayMeals = today[activeCampus] || {};
+        dayFlows = todayHourly[activeCampus] || [];
+      } else {
+        dayMeals = forecast[selectedForecastDate]?.[activeCampus] || {};
+        dayFlows = forecastHourly[selectedForecastDate]?.[activeCampus] || [];
+      }
+
+      let maxCount = 0;
+      for (const f of dayFlows) { if (f.head_count > maxCount) maxCount = f.head_count; }
+
+      let html = '';
+
+      // View toggle
+      html += renderViewToggle();
+
+      // Tabs
+      html += renderCampusTabs();
+
+      // Week overview grid
+      html += renderWeekOverview(baseDate, activeCampus);
+
+      // Selected day detail
+      const hasDayData = dayMeals && (dayMeals['午饭'] || dayMeals['晚饭']);
+      const dateLabel = isToday ? '今天' : `${shortDate(selectedForecastDate)} ${weekdayOf(selectedForecastDate)}`;
+
+      if (!hasDayData) {
+        html += `<div class="no-data-card">${dateLabel} 暂无课程数据</div>`;
+      } else {
+        html += `<h3 class="section-title">${dateLabel}${isToday ? '' : ' (预测)'}</h3>`;
+        html += '<div class="score-row">';
+        html += renderScoreCard('午饭', dayMeals['午饭'], !isToday);
+        html += renderScoreCard('晚饭', dayMeals['晚饭'], !isToday);
+        html += '</div>';
+
+        // Flow chart for the selected day
+        if (dayFlows.length > 0) {
+          html += `<h3 class="section-title">${dateLabel}下课人流${isToday ? '' : ' (预测)'}</h3>`;
+          html += `<div class="flow-card">${renderFlowBars(dayFlows, maxCount)}</div>`;
+        }
+      }
+
+      document.getElementById('app').innerHTML = html;
+      bindEvents();
+    }
+
+    function renderViewToggle() {
+      const hasForecast = DATA.forecast && Object.keys(DATA.forecast).length > 0;
+      // Always show toggle if forecast data is available
+      if (!hasForecast) return '';
+      return `
+        <div class="view-toggle">
+          <button class="view-btn${activeView === 'today' ? ' active' : ''}" data-view="today">今日</button>
+          <button class="view-btn${activeView === 'week' ? ' active' : ''}" data-view="week">本周预测</button>
+        </div>`;
+    }
+
+    function renderCampusTabs() {
+      let html = '<div class="tab-bar">';
+      for (const c of ['本部','顺德']) {
+        const active = c === activeCampus ? ' active' : '';
+        html += `<button class="tab-btn${active}" data-campus="${c}">${c === '本部' ? '校本部' : '顺德校区'}</button>`;
+      }
+      html += '</div>';
+      return html;
+    }
+
+    function bindEvents() {
+      // Campus tabs
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           activeCampus = btn.dataset.campus;
           render();
         });
       });
+
+      // View toggle
+      document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeView = btn.dataset.view;
+          if (activeView === 'week' && !selectedForecastDate) {
+            selectedForecastDate = DATA.date;
+          }
+          render();
+        });
+      });
+
+      // Week day cards
+      document.querySelectorAll('.week-day-card').forEach(card => {
+        card.addEventListener('click', () => {
+          selectedForecastDate = card.dataset.forecastDate;
+          render();
+        });
+      });
     }
 
+    // =====================================================================
+    // Bootstrap
+    // =====================================================================
     async function main() {
       try {
         const resp = await fetch('./data.json');
