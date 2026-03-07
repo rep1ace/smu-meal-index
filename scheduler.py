@@ -17,12 +17,16 @@ import datetime
 import json
 import logging
 import sys
+from zoneinfo import ZoneInfo
 
 import database as db
 import smu_login
 from calculator import compute_meal_scores, compute_node_flows
 from config import DATA_JSON_PATH
 from fetcher import fetch_all_courses
+
+# 北京时间时区
+_BEIJING = ZoneInfo("Asia/Shanghai")
 
 # ---------------------------------------------------------------------------
 # 日志配置
@@ -96,7 +100,9 @@ def _build_data_json(date: str) -> dict:
 
     return {
         "date": date,
-        "updated_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        "updated_at": datetime.datetime.now(_BEIJING)
+        .replace(tzinfo=None)
+        .isoformat(timespec="seconds"),
         "today": today,
         "hourly": hourly,
         "history": history,
@@ -127,7 +133,7 @@ def run(date: str | None = None) -> None:
         目标日期 (YYYY-MM-DD)。默认为今天。
     """
     if date is None:
-        date = datetime.date.today().isoformat()
+        date = datetime.datetime.now(_BEIJING).date().isoformat()
 
     logger.info("========== SMU Meal Index 开始运行 ==========")
     logger.info("目标日期: %s", date)
