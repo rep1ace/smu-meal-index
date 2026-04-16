@@ -21,7 +21,7 @@ from zoneinfo import ZoneInfo
 
 import database as db
 import smu_login
-from calculator import compute_meal_scores, compute_node_flows
+from calculator import NodeFlow, compute_meal_scores, compute_node_flows
 from config import DATA_JSON_PATH
 from fetcher import fetch_all_courses
 
@@ -41,6 +41,63 @@ logger = logging.getLogger("scheduler")
 # ---------------------------------------------------------------------------
 # data.json 生成
 # ---------------------------------------------------------------------------
+
+
+def _compute_stored_day_meals(
+    date: str,
+    campus: str,
+    *,
+    include_end_time: bool,
+) -> dict:
+    """基于已持久化的 hourly_flow，用当前算法回算某天某校区的饭点指数。"""
+    hourly_rows = db.query_hourly(date, campus)
+    if not hourly_rows:
+        return {}
+
+    node_flows = [
+        NodeFlow(
+            end_node=row["end_node"],
+            end_time=row["end_time"],
+            head_count=row["head_count"],
+        )
+        for row in hourly_rows
+    ]
+
+    result: dict = {}
+    for ms in compute_meal_scores(node_flows, campus, date):
+        payload = {
+            "score": ms.score,
+            "level": ms.level,
+            "head_count": ms.head_count,
+        }
+        if include_end_time:
+            payload["end_time"] = ms.end_time
+        result[ms.meal_type] = payload
+    return result
+
+
+def _is_known_hourly_row(row: dict) -> bool:
+    """判断逐节次人流是否有可识别作息时间。"""
+    return row.get("end_time") != "??:??"
+
+
+def _filter_known_hourly_rows(rows: list[dict]) -> list[dict]:
+    """过滤作息表无法识别的节次，避免前端出现 ?? 时间。"""
+    return [row for row in rows if _is_known_hourly_row(row)]
+
+
+def _filter_forecast_hourly(forecast_hourly: dict) -> dict:
+    """过滤预测逐节次人流中的未知作息时间。"""
+    result: dict = {}
+    for date, campuses in forecast_hourly.items():
+        day_payload: dict = {}
+        for campus, rows in campuses.items():
+            known_rows = _filter_known_hourly_rows(rows)
+            if known_rows:
+                day_payload[campus] = known_rows
+        if day_payload:
+            result[date] = day_payload
+    return result
 
 
 def _compute_forecast(
@@ -124,8 +181,8 @@ def _compute_forecast(
                 for nf in node_flows
             ]
 
-            # 计算抢饭指数（自适应归一化仍使用 base_date 作为参考日期）
-            meal_scores = compute_meal_scores(node_flows, campus, base_date)
+            # 计算抢饭指数：使用预测日期本身判断同星期/工作日/周末历史口径
+            meal_scores = compute_meal_scores(node_flows, campus, future_date)
             day_meals[campus] = {}
             for ms in meal_scores:
                 day_meals[campus][ms.meal_type] = {
@@ -172,11 +229,17 @@ def _build_data_json(
             "head_count": row["head_count"],
             "end_time": row["end_time"],
         }
+    for campus in list(today.keys()):
+        recomputed = _compute_stored_day_meals(date, campus, include_end_time=True)
+        if recomputed:
+            today[campus] = recomputed
 
     # 今日逐节次人流
     hourly_rows = db.query_hourly(date)
     hourly: dict = {}
     for row in hourly_rows:
+        if not _is_known_hourly_row(row):
+            continue
         campus = row["campus"]
         if campus not in hourly:
             hourly[campus] = []
@@ -203,6 +266,15 @@ def _build_data_json(
             "level": row["level"],
             "head_count": row["head_count"],
         }
+    for d, campuses in history.items():
+        for campus in list(campuses.keys()):
+            recomputed = _compute_stored_day_meals(
+                d,
+                campus,
+                include_end_time=False,
+            )
+            if recomputed:
+                history[d][campus] = recomputed
 
     result = {
         "date": date,
@@ -217,7 +289,7 @@ def _build_data_json(
     if forecast:
         result["forecast"] = forecast
     if forecast_hourly:
-        result["forecast_hourly"] = forecast_hourly
+        result["forecast_hourly"] = _filter_forecast_hourly(forecast_hourly)
 
     return result
 
@@ -282,6 +354,7 @@ def run(date: str | None = None) -> None:
 
             # 4a. 逐节次人流统计
             node_flows = compute_node_flows(courses, campus)
+            db.delete_hourly_flows(date, campus)
             for nf in node_flows:
                 db.upsert_hourly_flow(
                     date=date,

@@ -131,6 +131,17 @@ def upsert_hourly_flow(
     )
 
 
+def delete_hourly_flows(date: str, campus: str) -> None:
+    """删除某天某校区的逐节次人流，用于重跑时清理旧节点。"""
+    with _get_conn() as conn:
+        conn.execute(
+            "DELETE FROM hourly_flow WHERE date = ? AND campus = ?",
+            (date, campus),
+        )
+        conn.commit()
+    logger.debug("DELETE hourly_flow: %s %s", date, campus)
+
+
 # ---------------------------------------------------------------------------
 # 查询操作
 # ---------------------------------------------------------------------------
@@ -213,6 +224,73 @@ def query_head_counts_for_adaptive(
             (meal_type, campus, before_date, days),
         ).fetchall()
     return [r["head_count"] for r in rows]
+
+
+def query_weighted_pressures_for_adaptive(
+    meal_type: str,
+    campus: str,
+    before_date: str,
+    days: int,
+    node_weights: dict[int, float],
+    *,
+    sqlite_weekday: str | None = None,
+    weekend: bool | None = None,
+) -> list[float]:
+    """
+    查询历史饭点加权压力值，用于自适应归一化。
+
+    历史日期来自 meal_index，具体压力值由 hourly_flow 的节次人流按
+    node_weights 加权重算。即使某天没有对应节次人流，也保留为 0，
+    避免低课日被静默丢弃。
+    """
+    if not node_weights:
+        return []
+    if sqlite_weekday is not None and weekend is not None:
+        raise ValueError("sqlite_weekday and weekend cannot be used together")
+
+    where_parts = [
+        "meal_type = ?",
+        "campus = ?",
+        "date < ?",
+    ]
+    params: list[Any] = [meal_type, campus, before_date]
+
+    if sqlite_weekday is not None:
+        where_parts.append("strftime('%w', date) = ?")
+        params.append(sqlite_weekday)
+    elif weekend is True:
+        where_parts.append("strftime('%w', date) IN ('0', '6')")
+    elif weekend is False:
+        where_parts.append("strftime('%w', date) NOT IN ('0', '6')")
+
+    where_sql = " AND ".join(where_parts)
+
+    with _get_conn() as conn:
+        date_rows = conn.execute(
+            f"SELECT date FROM meal_index WHERE {where_sql} "
+            "ORDER BY date DESC LIMIT ?",
+            (*params, days),
+        ).fetchall()
+        dates = [r["date"] for r in date_rows]
+        if not dates:
+            return []
+
+        date_placeholders = ",".join("?" for _ in dates)
+        node_placeholders = ",".join("?" for _ in node_weights)
+        rows = conn.execute(
+            f"SELECT date, end_node, head_count FROM hourly_flow "
+            f"WHERE campus = ? "
+            f"AND date IN ({date_placeholders}) "
+            f"AND end_node IN ({node_placeholders})",
+            (campus, *dates, *node_weights.keys()),
+        ).fetchall()
+
+    pressure_by_date = dict.fromkeys(dates, 0.0)
+    for row in rows:
+        weight = node_weights.get(row["end_node"], 0.0)
+        pressure_by_date[row["date"]] += row["head_count"] * weight
+
+    return list(pressure_by_date.values())
 
 
 def query_recent_days(days: int) -> list[dict[str, Any]]:
