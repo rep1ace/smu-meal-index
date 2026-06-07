@@ -1,32 +1,32 @@
 {
-  "date": "2026-06-06",
-  "updated_at": "2026-06-06T08:05:10",
+  "date": "2026-06-07",
+  "updated_at": "2026-06-07T08:02:40",
   "today": {
     "本部": {
       "午饭": {
-        "score": 0.0,
+        "score": 1.3,
         "level": "畅通",
-        "head_count": 0,
+        "head_count": 22,
         "end_time": "12:00"
       },
       "晚饭": {
-        "score": 0.0,
+        "score": 8.0,
         "level": "畅通",
-        "head_count": 0,
+        "head_count": 48,
         "end_time": "17:40"
       }
     },
     "顺德": {
       "午饭": {
-        "score": 80.0,
-        "level": "爆满",
-        "head_count": 4061,
+        "score": 2.9,
+        "level": "畅通",
+        "head_count": 33,
         "end_time": "12:30"
       },
       "晚饭": {
-        "score": 2.8,
+        "score": 0.9,
         "level": "畅通",
-        "head_count": 67,
+        "head_count": 33,
         "end_time": "17:10"
       }
     }
@@ -34,30 +34,56 @@
   "hourly": {
     "本部": [
       {
-        "end_node": 2,
-        "end_time": "09:25",
-        "head_count": 146
+        "end_node": 4,
+        "end_time": "11:15",
+        "head_count": 22
+      },
+      {
+        "end_node": 9,
+        "end_time": "17:40",
+        "head_count": 48
       }
     ],
     "顺德": [
       {
         "end_node": 5,
         "end_time": "12:30",
-        "head_count": 4061
+        "head_count": 33
       },
       {
         "end_node": 9,
         "end_time": "17:10",
-        "head_count": 67
-      },
-      {
-        "end_node": 10,
-        "end_time": "20:10",
-        "head_count": 100
+        "head_count": 33
       }
     ]
   },
   "history": {
+    "2026-06-07": {
+      "本部": {
+        "午饭": {
+          "score": 1.3,
+          "level": "畅通",
+          "head_count": 22
+        },
+        "晚饭": {
+          "score": 8.0,
+          "level": "畅通",
+          "head_count": 48
+        }
+      },
+      "顺德": {
+        "午饭": {
+          "score": 2.9,
+          "level": "畅通",
+          "head_count": 33
+        },
+        "晚饭": {
+          "score": 0.9,
+          "level": "畅通",
+          "head_count": 33
+        }
+      }
+    },
     "2026-06-06": {
       "本部": {
         "午饭": {
@@ -213,53 +239,9 @@
           "head_count": 1780
         }
       }
-    },
-    "2026-05-31": {
-      "顺德": {
-        "午饭": {
-          "score": 2.9,
-          "level": "畅通",
-          "head_count": 33
-        },
-        "晚饭": {
-          "score": 0.9,
-          "level": "畅通",
-          "head_count": 33
-        }
-      }
     }
   },
   "forecast": {
-    "2026-06-07": {
-      "本部": {
-        "午饭": {
-          "score": 1.3,
-          "level": "畅通",
-          "head_count": 22,
-          "end_time": "12:00"
-        },
-        "晚饭": {
-          "score": 8.0,
-          "level": "畅通",
-          "head_count": 48,
-          "end_time": "17:40"
-        }
-      },
-      "顺德": {
-        "午饭": {
-          "score": 2.9,
-          "level": "畅通",
-          "head_count": 33,
-          "end_time": "12:30"
-        },
-        "晚饭": {
-          "score": 0.9,
-          "level": "畅通",
-          "head_count": 33,
-          "end_time": "17:10"
-        }
-      }
-    },
     "2026-06-08": {
       "本部": {
         "午饭": {
@@ -277,9 +259,9 @@
       },
       "顺德": {
         "午饭": {
-          "score": 69.7,
+          "score": 65.2,
           "level": "拥挤",
-          "head_count": 2240,
+          "head_count": 2213,
           "end_time": "12:30"
         },
         "晚饭": {
@@ -293,9 +275,9 @@
     "2026-06-09": {
       "本部": {
         "午饭": {
-          "score": 40.6,
+          "score": 41.6,
           "level": "一般",
-          "head_count": 1973,
+          "head_count": 2013,
           "end_time": "12:00"
         },
         "晚饭": {
@@ -307,15 +289,15 @@
       },
       "顺德": {
         "午饭": {
-          "score": 50.4,
-          "level": "拥挤",
-          "head_count": 2880,
+          "score": 44.3,
+          "level": "一般",
+          "head_count": 2822,
           "end_time": "12:30"
         },
         "晚饭": {
-          "score": 68.2,
+          "score": 73.9,
           "level": "拥挤",
-          "head_count": 2422,
+          "head_count": 2480,
           "end_time": "17:10"
         }
       }
@@ -337,9 +319,9 @@
       },
       "顺德": {
         "午饭": {
-          "score": 64.9,
-          "level": "拥挤",
-          "head_count": 2783,
+          "score": 75.5,
+          "level": "爆满",
+          "head_count": 2910,
           "end_time": "12:30"
         },
         "晚饭": {
@@ -353,9 +335,9 @@
     "2026-06-11": {
       "本部": {
         "午饭": {
-          "score": 26.3,
+          "score": 26.6,
           "level": "一般",
-          "head_count": 1346,
+          "head_count": 1372,
           "end_time": "12:00"
         },
         "晚饭": {
@@ -367,15 +349,15 @@
       },
       "顺德": {
         "午饭": {
-          "score": 78.3,
-          "level": "爆满",
-          "head_count": 2705,
+          "score": 66.6,
+          "level": "拥挤",
+          "head_count": 2513,
           "end_time": "12:30"
         },
         "晚饭": {
-          "score": 33.2,
+          "score": 32.0,
           "level": "一般",
-          "head_count": 1642,
+          "head_count": 1612,
           "end_time": "17:10"
         }
       }
@@ -383,23 +365,23 @@
     "2026-06-12": {
       "本部": {
         "午饭": {
-          "score": 31.1,
+          "score": 26.4,
           "level": "一般",
-          "head_count": 1522,
+          "head_count": 1344,
           "end_time": "12:00"
         },
         "晚饭": {
-          "score": 32.3,
+          "score": 35.6,
           "level": "一般",
-          "head_count": 1029,
+          "head_count": 1069,
           "end_time": "17:40"
         }
       },
       "顺德": {
         "午饭": {
-          "score": 52.5,
+          "score": 66.5,
           "level": "拥挤",
-          "head_count": 2513,
+          "head_count": 2597,
           "end_time": "12:30"
         },
         "晚饭": {
@@ -412,32 +394,6 @@
     }
   },
   "forecast_hourly": {
-    "2026-06-07": {
-      "本部": [
-        {
-          "end_node": 4,
-          "end_time": "11:15",
-          "head_count": 22
-        },
-        {
-          "end_node": 9,
-          "end_time": "17:40",
-          "head_count": 48
-        }
-      ],
-      "顺德": [
-        {
-          "end_node": 5,
-          "end_time": "12:30",
-          "head_count": 33
-        },
-        {
-          "end_node": 9,
-          "end_time": "17:10",
-          "head_count": 33
-        }
-      ]
-    },
     "2026-06-08": {
       "本部": [
         {
@@ -495,7 +451,7 @@
         {
           "end_node": 5,
           "end_time": "12:30",
-          "head_count": 729
+          "head_count": 702
         },
         {
           "end_node": 7,
@@ -529,12 +485,12 @@
         {
           "end_node": 5,
           "end_time": "12:00",
-          "head_count": 1069
+          "head_count": 1109
         },
         {
           "end_node": 7,
           "end_time": "15:55",
-          "head_count": 728
+          "head_count": 768
         },
         {
           "end_node": 8,
@@ -556,7 +512,7 @@
         {
           "end_node": 2,
           "end_time": "09:55",
-          "head_count": 1691
+          "head_count": 1665
         },
         {
           "end_node": 4,
@@ -566,12 +522,12 @@
         {
           "end_node": 5,
           "end_time": "12:30",
-          "head_count": 560
+          "head_count": 502
         },
         {
           "end_node": 7,
           "end_time": "15:25",
-          "head_count": 1779
+          "head_count": 1738
         },
         {
           "end_node": 8,
@@ -581,7 +537,7 @@
         {
           "end_node": 9,
           "end_time": "17:10",
-          "head_count": 2262
+          "head_count": 2320
         },
         {
           "end_node": 11,
@@ -627,12 +583,12 @@
         {
           "end_node": 2,
           "end_time": "09:55",
-          "head_count": 1208
+          "head_count": 1344
         },
         {
           "end_node": 4,
           "end_time": "11:45",
-          "head_count": 1934
+          "head_count": 2061
         },
         {
           "end_node": 5,
@@ -642,7 +598,7 @@
         {
           "end_node": 7,
           "end_time": "15:25",
-          "head_count": 1777
+          "head_count": 1496
         },
         {
           "end_node": 8,
@@ -666,7 +622,7 @@
         {
           "end_node": 4,
           "end_time": "11:15",
-          "head_count": 718
+          "head_count": 744
         },
         {
           "end_node": 5,
@@ -703,7 +659,7 @@
         {
           "end_node": 4,
           "end_time": "11:45",
-          "head_count": 1623
+          "head_count": 1431
         },
         {
           "end_node": 5,
@@ -713,17 +669,17 @@
         {
           "end_node": 7,
           "end_time": "15:25",
-          "head_count": 732
+          "head_count": 597
         },
         {
           "end_node": 8,
           "end_time": "16:25",
-          "head_count": 795
+          "head_count": 825
         },
         {
           "end_node": 9,
           "end_time": "17:10",
-          "head_count": 847
+          "head_count": 787
         }
       ]
     },
@@ -742,7 +698,7 @@
         {
           "end_node": 5,
           "end_time": "12:00",
-          "head_count": 812
+          "head_count": 634
         },
         {
           "end_node": 7,
@@ -752,7 +708,7 @@
         {
           "end_node": 8,
           "end_time": "16:55",
-          "head_count": 379
+          "head_count": 419
         },
         {
           "end_node": 9,
@@ -769,7 +725,7 @@
         {
           "end_node": 2,
           "end_time": "09:55",
-          "head_count": 1000
+          "head_count": 1035
         },
         {
           "end_node": 3,
@@ -784,7 +740,7 @@
         {
           "end_node": 5,
           "end_time": "12:30",
-          "head_count": 661
+          "head_count": 745
         },
         {
           "end_node": 7,
