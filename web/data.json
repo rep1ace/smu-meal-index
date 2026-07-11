@@ -1,9 +1,51 @@
 {
-  "date": "2026-07-11",
-  "updated_at": "2026-07-11T07:55:49",
-  "today": {},
-  "hourly": {},
+  "date": "2026-07-12",
+  "updated_at": "2026-07-12T07:52:45",
+  "today": {
+    "顺德": {
+      "午饭": {
+        "score": 2.4,
+        "level": "畅通",
+        "head_count": 33,
+        "end_time": "12:30"
+      },
+      "晚饭": {
+        "score": 0.9,
+        "level": "畅通",
+        "head_count": 33,
+        "end_time": "17:10"
+      }
+    }
+  },
+  "hourly": {
+    "顺德": [
+      {
+        "end_node": 5,
+        "end_time": "12:30",
+        "head_count": 33
+      },
+      {
+        "end_node": 9,
+        "end_time": "17:10",
+        "head_count": 33
+      }
+    ]
+  },
   "history": {
+    "2026-07-12": {
+      "顺德": {
+        "午饭": {
+          "score": 2.4,
+          "level": "畅通",
+          "head_count": 33
+        },
+        "晚饭": {
+          "score": 0.9,
+          "level": "畅通",
+          "head_count": 33
+        }
+      }
+    },
     "2026-07-10": {
       "本部": {
         "午饭": {
@@ -159,39 +201,9 @@
           "head_count": 33
         }
       }
-    },
-    "2026-07-04": {
-      "顺德": {
-        "午饭": {
-          "score": 54.7,
-          "level": "拥挤",
-          "head_count": 4034
-        },
-        "晚饭": {
-          "score": 86.7,
-          "level": "爆满",
-          "head_count": 4171
-        }
-      }
     }
   },
   "forecast": {
-    "2026-07-12": {
-      "顺德": {
-        "午饭": {
-          "score": 2.4,
-          "level": "畅通",
-          "head_count": 33,
-          "end_time": "12:30"
-        },
-        "晚饭": {
-          "score": 0.9,
-          "level": "畅通",
-          "head_count": 33,
-          "end_time": "17:10"
-        }
-      }
-    },
     "2026-07-13": {
       "本部": {
         "午饭": {
@@ -271,7 +283,7 @@
         "午饭": {
           "score": 9.7,
           "level": "畅通",
-          "head_count": 678,
+          "head_count": 677,
           "end_time": "12:30"
         },
         "晚饭": {
@@ -344,20 +356,6 @@
     }
   },
   "forecast_hourly": {
-    "2026-07-12": {
-      "顺德": [
-        {
-          "end_node": 5,
-          "end_time": "12:30",
-          "head_count": 33
-        },
-        {
-          "end_node": 9,
-          "end_time": "17:10",
-          "head_count": 33
-        }
-      ]
-    },
     "2026-07-13": {
       "本部": [
         {
@@ -457,7 +455,7 @@
         {
           "end_node": 4,
           "end_time": "11:45",
-          "head_count": 631
+          "head_count": 630
         },
         {
           "end_node": 5,
