@@ -1,9 +1,51 @@
 {
-  "date": "2026-08-13",
-  "updated_at": "2026-08-13T07:38:00",
-  "today": {},
-  "hourly": {},
+  "date": "2026-08-14",
+  "updated_at": "2026-08-14T07:37:42",
+  "today": {
+    "本部": {
+      "午饭": {
+        "score": 0.2,
+        "level": "畅通",
+        "head_count": 20,
+        "end_time": "12:00"
+      },
+      "晚饭": {
+        "score": 0.6,
+        "level": "畅通",
+        "head_count": 20,
+        "end_time": "17:40"
+      }
+    }
+  },
+  "hourly": {
+    "本部": [
+      {
+        "end_node": 4,
+        "end_time": "11:15",
+        "head_count": 20
+      },
+      {
+        "end_node": 9,
+        "end_time": "17:40",
+        "head_count": 20
+      }
+    ]
+  },
   "history": {
+    "2026-08-14": {
+      "本部": {
+        "午饭": {
+          "score": 0.2,
+          "level": "畅通",
+          "head_count": 20
+        },
+        "晚饭": {
+          "score": 0.6,
+          "level": "畅通",
+          "head_count": 20
+        }
+      }
+    },
     "2026-07-17": {
       "本部": {
         "午饭": {
@@ -147,36 +189,10 @@
           "head_count": 33
         }
       }
-    },
-    "2026-07-10": {
-      "本部": {
-        "午饭": {
-          "score": 12.6,
-          "level": "畅通",
-          "head_count": 613
-        },
-        "晚饭": {
-          "score": 1.9,
-          "level": "畅通",
-          "head_count": 145
-        }
-      },
-      "顺德": {
-        "午饭": {
-          "score": 15.6,
-          "level": "畅通",
-          "head_count": 1102
-        },
-        "晚饭": {
-          "score": 12.8,
-          "level": "畅通",
-          "head_count": 506
-        }
-      }
     }
   },
   "forecast": {
-    "2026-08-14": {
+    "2026-08-20": {
       "本部": {
         "午饭": {
           "score": 0.2,
@@ -185,25 +201,20 @@
           "end_time": "12:00"
         },
         "晚饭": {
-          "score": 0.6,
+          "score": 0.0,
           "level": "畅通",
-          "head_count": 20,
+          "head_count": 0,
           "end_time": "17:40"
         }
       }
     }
   },
   "forecast_hourly": {
-    "2026-08-14": {
+    "2026-08-20": {
       "本部": [
         {
           "end_node": 4,
           "end_time": "11:15",
-          "head_count": 20
-        },
-        {
-          "end_node": 9,
-          "end_time": "17:40",
           "head_count": 20
         }
       ]
