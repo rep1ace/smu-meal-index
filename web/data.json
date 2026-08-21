@@ -1,31 +1,8 @@
 {
-  "date": "2026-08-21",
-  "updated_at": "2026-08-21T07:22:15",
-  "today": {
-    "本部": {
-      "午饭": {
-        "score": 0.2,
-        "level": "畅通",
-        "head_count": 20,
-        "end_time": "12:00"
-      },
-      "晚饭": {
-        "score": 0.0,
-        "level": "畅通",
-        "head_count": 0,
-        "end_time": "17:40"
-      }
-    }
-  },
-  "hourly": {
-    "本部": [
-      {
-        "end_node": 4,
-        "end_time": "11:15",
-        "head_count": 20
-      }
-    ]
-  },
+  "date": "2026-08-22",
+  "updated_at": "2026-08-22T07:20:46",
+  "today": {},
+  "hourly": {},
   "history": {
     "2026-08-21": {
       "本部": {
@@ -172,6 +149,35 @@
           "head_count": 8
         }
       }
+    }
+  },
+  "forecast": {
+    "2026-08-28": {
+      "本部": {
+        "午饭": {
+          "score": 0.0,
+          "level": "畅通",
+          "head_count": 0,
+          "end_time": "12:00"
+        },
+        "晚饭": {
+          "score": 0.0,
+          "level": "畅通",
+          "head_count": 0,
+          "end_time": "17:40"
+        }
+      }
+    }
+  },
+  "forecast_hourly": {
+    "2026-08-28": {
+      "本部": [
+        {
+          "end_node": 2,
+          "end_time": "09:25",
+          "head_count": 20
+        }
+      ]
     }
   }
 }
